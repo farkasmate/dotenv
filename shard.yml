@@ -1,0 +1,13 @@
+name: dotenv
+version: 0.1.0
+
+authors:
+  - Mate Farkas <y2k.elma@gmail.com>
+
+targets:
+  dotenv:
+    main: src/dotenv.cr
+
+crystal: '>= 1.19.1'
+
+license: MIT
