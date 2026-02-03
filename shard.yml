@@ -4,9 +4,20 @@ version: 0.1.0
 authors:
   - Mate Farkas <y2k.elma@gmail.com>
 
+dependencies:
+  dotenv:
+    github: gdotdesign/cr-dotenv
+    commit: 8bedfcf5f127c29d85687c7212a47d22cba296a9
+  gpgme:
+    github: djberg96/crystal-gpgme
+    commit: 56952385ed5c015370f3adbd81eac5370f538ce6
+
+libraries:
+  libgpgme: "*"
+
 targets:
   dotenv:
-    main: src/dotenv.cr
+    main: src/cli.cr
 
 crystal: '>= 1.19.1'
 
