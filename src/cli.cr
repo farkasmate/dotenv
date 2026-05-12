@@ -7,7 +7,7 @@ require "./log"
 require "./pass"
 
 module Dotenv
-  VERSION = "0.3.0"
+  VERSION = "0.3.1"
 
   private def parse_args : {String, Array(String)}
     args = ARGV.dup
