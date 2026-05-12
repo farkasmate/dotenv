@@ -6,7 +6,7 @@ require "./log"
 require "./pass"
 
 module Dotenv
-  VERSION = "0.2.0"
+  VERSION = "0.2.1"
 
   private def parse_args : {String, Array(String)}
     args = ARGV.dup
@@ -34,7 +34,7 @@ module Dotenv
     dotenv_files.each do |dotenv|
       Log.info { "Loading #{dotenv}" }
 
-      File.open(dotenv) { |file| Dotenv.load(file) }
+      File.open(dotenv) { |file| Dotenv.load(file, override_keys: true) }
     end
 
     resolve_pass if Config::RESOLVE_PASS
