@@ -1,0 +1,21 @@
+name: dotenv
+
+services:
+  dotenv:
+    image: matefarkas/dotenv:latest
+    build:
+      context: .
+      args:
+        CRYSTAL_VERSION: ${CRYSTAL_VERSION:?}
+    env_file: .env
+    network_mode: none
+
+  deploy:
+    image: matefarkas/dotenv:latest
+    entrypoint: /bin/sh
+    command: -c "cp /build/bin/dotenv /out/dotenv"
+    network_mode: none
+    volumes:
+      - ./bin/:/out/:rw
+    profiles:
+      - NONE
