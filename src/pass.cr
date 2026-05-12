@@ -5,16 +5,26 @@ require "./config"
 require "./log"
 
 module Dotenv
+  PASS_CACHE = Hash(Path, Array(String)).new
+
   private def decrypt(path) : Array(String)
-    raise "Secret file not found: #{path}" unless File.exists? path
+    Log.debug { "Decrypting #{path}..." }
 
-    cleartext = GPGME.decrypt(File.read(path))
+    if PASS_CACHE.has_key? path
+      Log.debug { "Using cached value for #{path}" }
+    else
+      raise "Secret file not found: #{path}" unless File.exists? path
 
-    raise "First line of secret file must be password and the second line username: #{path}" if cleartext.size < 2
+      cleartext = GPGME.decrypt(File.read(path))
 
-    password, username, *_ = cleartext.lines
+      raise "First line of secret file must be password and the second line username: #{path}" if cleartext.size < 2
 
-    cleartext.gsub(/^.*---\n/m, "password: #{password}\nusername: #{username}\n---\n").lines
+      password, username, *_ = cleartext.lines
+
+      PASS_CACHE[path] = cleartext.gsub(/^.*---\n/m, "password: #{password}\nusername: #{username}\n---\n").lines
+    end
+
+    return PASS_CACHE[path]
   end
 
   private def resolve_pass
