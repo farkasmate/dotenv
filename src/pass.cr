@@ -2,6 +2,7 @@ require "gpgme"
 require "yaml"
 
 require "./config"
+require "./env"
 require "./log"
 
 module Dotenv
@@ -27,10 +28,10 @@ module Dotenv
     return PASS_CACHE[path]
   end
 
-  private def resolve_pass
-    Log.info { "Resolving pass secrets..." } if ENV.any? { |_, v| v.starts_with? "pass://" }
+  private def resolve_pass(env : ResolvedEnv)
+    Log.info { "Resolving pass secrets..." } if env.any? { |_, v| v.starts_with? "pass://" }
 
-    ENV.each do |key, value|
+    env.each do |key, value|
       next unless value.starts_with? "pass://"
 
       path = Path[value.lchop("pass://")]
@@ -51,12 +52,12 @@ module Dotenv
         end
 
         if yaml.as_s?
-          ENV[key] = yaml.as_s
+          env[key] = yaml.as_s
           break
         end
       end
 
-      if ENV[key].starts_with? "pass://"
+      if env[key].starts_with? "pass://"
         raise "Could not resolve key #{yaml_dig} in #{secret_name} as String"
       end
     end

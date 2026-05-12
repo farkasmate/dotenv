@@ -1,12 +1,13 @@
 require "dotenv"
 
 require "./config"
+require "./env"
 require "./help"
 require "./log"
 require "./pass"
 
 module Dotenv
-  VERSION = "0.2.1"
+  VERSION = "0.3.0"
 
   private def parse_args : {String, Array(String)}
     args = ARGV.dup
@@ -31,17 +32,20 @@ module Dotenv
   dotenv_files = Dir.glob(dirs.map { |dir| Path[dir] / Config::FILE })
 
   begin
+    env = ResolvedEnv.new
+
     dotenv_files.each do |dotenv|
       Log.info { "Loading #{dotenv}" }
 
-      File.open(dotenv) { |file| Dotenv.load(file, override_keys: true) }
+      File.open(dotenv) { |file| env.merge_env!(Dotenv.parse(file)) }
     end
 
-    resolve_pass if Config::RESOLVE_PASS
+    resolve_pass(env) if Config::RESOLVE_PASS
 
-    Process.exec(*parse_args)
+    Process.exec(*parse_args, env: env)
   rescue ex
     Log.error { ex.message }
+
     ::exit 1
   end
 end
